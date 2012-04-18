@@ -1,0 +1,28 @@
+This script collects all events on one calendar and summarizes them in one daily event on another calendar and daily announcement on a Google Site. It is intended for use for vacation / sick reporting for organizations using Google Apps for Education or Business.  I'm not a programmer so I'm sure it can be improved! More info and screenshots in the Google Apps Developer blog post at http://googleappsdeveloper.blogspot.com/2011/05/brown-universitys-it-dept-uses-apps.html 
+
+Basic overview:
+Once the script is set up, everyone in your organization will invite a specific email address to their vacation / sick events (identified in the sourcecalname variable in the script). To make this really easy for your co-workers, just create a dummy account in your domain to be invited to events (e.g., i-am-out@mydomain.com).
+
+The script will scan the calendar that everyone is inviting. It will take the events on that calendar for each day and consolidate them into one daily event on a second calendar (identified in the destinationcalname variable in the script). It will also post an announcement to a Google Site announcement page (identified in the outpage variable in the script).
+
+
+How to install:
+ - You will probably want to install this in a generic account so the events and posts are not created by a specific person. So your first step may be to create a generic account (e.g., i-am-out@mydomain.com) and log into that account.
+
+ - That account's primary calendar will be the ones that people invite to their vacation events. Create a second calendar on which the condensed daily event will be created, e.g., "Daily Out of Office Report". The name of this other calendar will be stored in the destinationcalname variable in the script.
+
+ - Create a Google spreadsheet.
+
+ - In the Google Spreadsheet, go into the script editor and paste the .js script. 
+
+ - Update the variables at the top of the script - sourcecalname, destinationcalname, siteupdatenotify, outpage
+
+ - Set up a trigger for automateGone / time-driven / hour timer / every hour
+
+ - Set up a trigger for automateGoneDaily / time-driven / day timer / 9-10am (or your desired time)
+
+ - When you set up these triggers, it should prompt you to authorize the script's access to calendar / mail / sites / docs
+
+ - You may want to customize the getEventType function for the types of out events in your environment. The script starts with sick, vacation, conference/training, or just 'out' (the default)
+
+ - If you'd like to test, invite the email address to an event and then run automateGone - you should see an event created on the second calendar
