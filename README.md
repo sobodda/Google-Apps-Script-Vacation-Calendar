@@ -49,4 +49,4 @@ You can customize the getEventType function for the types of out events in your 
 
 Out of the box, pattern matching for `sick`,  `vacation`,  `conference/training`, or just 'out' (the default)
 
-To test, invite the email address to an event and then run automateGone - you should see an event created on the second calendar
+To test, invite the email address to an event and then run `automateGone` manually - you should see an event created on the second calendar
