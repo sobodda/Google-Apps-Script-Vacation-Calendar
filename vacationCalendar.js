@@ -11,17 +11,16 @@ Triggers:
 */
 
 var sourceCalName = "my-calendar-email-address@mydomain.com"; 
-    //calendar which is invited to gone events
+    /*calendar which is invited to gone events*/
 var destinationCalName = "Sick and Vacation Calendar"; 
-    //calendar that people overlay to view who is out
+    /*calendar that people overlay to view who is out*/
 var siteUpdateNotify = "youraddress@mydomain.com"; 
     //email this address when out list posted to google site
 var d = new Date();
 var timezone = "GMT-" + d.getTimezoneOffset()/60; 
-    //will be GMT-4 in spring, GMT-5 in fall
-    //automatic method of DST change? Probably...
+    /*uses Timezone detail from gDoc config, validate this is accurate...*/
 var outpage = "https://sites.google.com/my-site-name/who-is-out/out/"; 
-    //the site to which the list is posted
+    /*the site to which the list is posted*/
 
 
 function automateGone()
