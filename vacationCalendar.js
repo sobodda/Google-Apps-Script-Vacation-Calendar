@@ -19,7 +19,7 @@ var siteUpdateNotify = "youraddress@mydomain.com";
 var d = new Date();
 var timezone = "GMT-" + d.getTimezoneOffset()/60; 
     /*uses Timezone detail from gDoc config, validate this is accurate...*/
-var outpage = "https://sites.google.com/my-site-name/who-is-out/out/"; 
+var outPage = "https://sites.google.com/my-site-name/who-is-out/out/"; 
     /*the site to which the list is posted*/
 
 
@@ -28,21 +28,21 @@ function automateGone()
 	/*this function will be called every hour to update the one event on the 
         official calendar*/
     
-	var mydate = new Date(); 
-	mydate.setHours(0);
-	mydate.setMinutes(0);
-	mydate.setSeconds(0);
-	mydate.setDate(mydate.getDate()-1);
+	var myDate = new Date(); 
+	myDate.setHours(0);
+	myDate.setMinutes(0);
+	myDate.setSeconds(0);
+	myDate.setDate(myDate.getDate()-1);
 
-	for(i=0; i<7; i++) 	 //update next 7 days
+	for( i=0; i<7; i++)  //update next 7 days
 	{
-		mydate.setDate(mydate.getDate() + 1); 
+		myDate.setDate(myDate.getDate() + 1); 
 
-		if(mydate.getDay() !== 0 && mydate.getDay() != 6)	//not a weekend
+		if(myDate.getDay() !== 0 && myDate.getDay() != 6)	//not a weekend
 		{ 
-			var gonelistarray = whoIsOut(mydate);
-			//Logger.log(mydate + " " + gonelistarray);
-			createGoneEvent(gonelistarray , mydate);
+			var goneListArray = whoIsOut(myDate);
+			//Logger.log(myDate + " " + goneListArray);
+			createGoneEvent(goneListArray , myDate);
 		}
 	}
 }
@@ -52,36 +52,39 @@ function automateGoneDaily()
 	/*this function will be called once a day to update the one event on the 
         official calendar*/
     
-	var mydate = new Date(); 
-	mydate.setHours(0);
-	mydate.setMinutes(0);
-	mydate.setSeconds(0);
+	var myDate = new Date(); 
+	myDate.setHours(0);
+	myDate.setMinutes(0);
+	myDate.setSeconds(0);
   
 	/*update site - will only get updated if there isn't already a post for     
         the date */
     
-	var gonelistarray = whoIsOut(mydate); 
-	updateInternalSite(gonelistarray, mydate);
-	mydate.setDate(mydate.getDate()-1);
+	var goneListArray = whoIsOut(myDate); 
+	updateInternalSite(goneListArray, myDate);
+	myDate.setDate(myDate.getDate()-1);
 	//update calendar for next 90 days
-	for(i=0; i<91; i++)
+	for( i=0; i<91; i++)
 	{
-		mydate.setDate(mydate.getDate() + 1);  
+		myDate.setDate(myDate.getDate() + 1);  
 		
-		if(mydate.getDay() !== 0 && mydate.getDay() != 6)
+		if(myDate.getDay() !== 0 && myDate.getDay() != 6)
 		{
-			var gonelistarray = whoIsOut(mydate); //prev declared?
-			createGoneEvent(gonelistarray , mydate);
+			var goneListArray = whoIsOut(myDate); 
+                /*goneListArray also declared in func(automateGone), required
+                    in this function as well*/
+			createGoneEvent(goneListArray , myDate);
 		}
 	}
 }
 
-function whoIsOut(thedate)
+function whoIsOut(theDate)
 {
-	var pplout = new Array();
+	var peopleOut = new Array();
+        /*suggesting the array literal notation [], need to test*/
 	var Calendar = CalendarApp.getCalendarsByName(sourceCalName)[0];
-	var events = Calendar.getEventsForDay(thedate);
-	// cycle through events and add info to pplout 
+	var events = Calendar.getEventsForDay(theDate);
+	    /*cycle through events and add info to peopleOut*/
 	var eventLines = ""; //unused var?
 
 	for (var e in events) 
@@ -89,24 +92,24 @@ function whoIsOut(thedate)
 		var event = events[e];
 		var duration = (event.getEndTime() - event.getStartTime())/86400000;
 			
-		if((thedate>=event.getStartTime())||duration<1) 	
+		if( (theDate >= event.getStartTime() ) || duration<1 ) 	
             /*weed out future all-day events mistakenly pulled by broken 
             getEventsForDay function*/
 		{ 
 
 			if(duration>1)	//multi-day event - delete one day from end time
 			{ 
-				var enddate = event.getEndTime();
-				enddate.setDate(enddate.getDate() - 1);  
-				var durdisplay =  Utilities.formatDate(event.getStartTime(), 
+				var endDate = event.getEndTime();
+				endDate.setDate(endDate.getDate() - 1);  
+				var durDisplay =  Utilities.formatDate(event.getStartTime(), 
                     (event.isAllDayEvent() === true ? "GMT" : timezone),
-                    "M/d") + " - " + Utilities.formatDate(enddate, 
+                    "M/d") + " - " + Utilities.formatDate(endDate, 
                     (event.isAllDayEvent() === true ? "GMT" : timezone), "M/d");
 			}
 			
 			else if(duration<1)  //part day
 			{
-				var durdisplay =  Utilities.formatDate(event.getStartTime(), 
+				var durDisplay =  Utilities.formatDate(event.getStartTime(), 
                     (event.isAllDayEvent() === true ? "GMT" : timezone), 
                     "h:mm a") + " - " + Utilities.formatDate(event.getEndTime(),
                     (event.isAllDayEvent() === true ? "GMT" : timezone),
@@ -115,7 +118,7 @@ function whoIsOut(thedate)
 			
 			else  //full day
 			{
-				var durdisplay = "full day"; 
+				var durDisplay = "full day"; 
 			}
   
 			/*the following will not be necessary because of the new 
@@ -124,56 +127,56 @@ function whoIsOut(thedate)
             calendar, they can put their email address in the 
             event description*/
 
-			var onbehalf = "";
-			//var regexemail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+			var onBehalf = "";
+			//var regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-			var regexemail = /[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/;
+			var regexEmail = /[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/;
 
-			//Logger.log(event.getDescription() + " " + event.getDescription().search(regexemail));
+			//Logger.log(event.getDescription() + " " + event.getDescription().search(regexEmail));
 			
-			if(event.getDescription().search(regexemail)>-1) 	
+			if(event.getDescription().search(regexEmail)>-1) 	
                 /*workaround for inviting on behalf of - looks for email address 
                 in description*/
 			{ 
-				var descwordarray = event.getDescription().split(" ");
+				var descWordArray = event.getDescription().split(" ");
 
-				for (x in descwordarray)
+				for (x in descWordArray)
 				{
 
-					if(descwordarray[x].search(regexemail)>-1)
+					if(descWordArray[x].search(regexEmail)>-1)
 					{
-						onbehalf = descwordarray[x]; 
+						onBehalf = descWordArray[x]; 
 					}
 				}
 			}
 			
-			var personemail = (onbehalf==="") ? 
-                event.getOriginalCalendarId() : onbehalf;
-			pplout.push(personemail.toLowerCase() + " " +  
-                getEventType(event.getTitle()) + " " + durdisplay);
+			var personEmail = (onBehalf==="") ? 
+                event.getOriginalCalendarId() : onBehalf;
+			peopleOut.push(personEmail.toLowerCase() + " " +  
+                getEventType(event.getTitle()) + " " + durDisplay);
 		}
 	}
 	
-	pplout.sort();
-	return pplout;
+	peopleOut.sort();
+	return peopleOut;
 }
 
-function getEventType(thetitle)
+function getEventType(theTitle)
 {
 	/*keywords to decide whether to list person as sick, vacaction, conference,
     or just out (default)*/
     
 	eventType = "";
 	
-	if(thetitle.search(/sick|doctor|dr\.|dentist|medical/i)>-1)
+	if(theTitle.search(/sick|doctor|dr\.|dentist|medical/i)>-1)
 	{
 		eventType = "sick/doctor";
 	}
-	else if(thetitle.search(/vacation|vaca/i)>-1)
+	else if(theTitle.search(/vacation|vaca|vac|holiday/i)>-1)
 	{
 		eventType = "vacation";   
 	}
-	else if(thetitle.search(/conference|training|seminar|session|meeting/i)>-1)
+	else if(theTitle.search(/conference|training|seminar|session|meeting/i)>-1)
 	{
 		eventType = "conference/training";
 	}
@@ -184,65 +187,65 @@ function getEventType(thetitle)
 	return eventType;
 }
 
-function createGoneEvent(gonelistarray, thedate)
+function createGoneEvent(goneListArray, theDate)
 {
 	//this function deletes existing 'who is out' event and adds updated one
-	if(gonelistarray.length===0)	//do not post if nobody is out
+	if(goneListArray.length===0)	//do not post if nobody is out
 	{
 		return false;
 	}
 	
-	gonelist = gonelistarray.join("\n");
-	thedate.setDate(thedate.getDate());
-	if(gonelist.length===0)
+	var goneList = goneListArray.join("\n");
+	theDate.setDate(theDate.getDate());
+	if(goneList.length===0)
 	{
 		return false;
 	}
 
 	var official = CalendarApp.openByName(destinationCalName);
-	var events = official.getEventsForDay(thedate);
+	var events = official.getEventsForDay(theDate);
   
 	for (var e in events) 
 	{
 		var event = events[e];
-		var startdate = Utilities.formatDate(event.getStartTime(),
+		var startDate = Utilities.formatDate(event.getStartTime(),
             (event.isAllDayEvent() === true ? "GMT" : timezone),"M/d/yyyy");
-		var thedateshort = Utilities.formatDate(thedate,"GMT","M/d/yyyy");
+		var theDateshort = Utilities.formatDate(theDate,"GMT","M/d/yyyy");
 
-		if(event.getTitle()=="Who is Out" && (thedateshort>=startdate))	 
+		if(event.getTitle()=="Who is Out" && (theDateshort>=startDate))	 
             /*need to compare dates because of all day event bug*/
 		{
 			event.deleteEvent(); //delete existing event before recreating
 		}
     }
 	
-	gonelist += "\nLast updated: " + Utilities.formatDate(new Date(), 
+	goneList += "\nLast updated: " + Utilities.formatDate(new Date(), 
         timezone, "EEEE M/d h:mm a");
-	var advancedArgs = {description:gonelist};
-	official.createAllDayEvent("Who is Out", thedate, advancedArgs);  
+	var advancedArgs = {description:goneList};
+	official.createAllDayEvent("Who is Out", theDate, advancedArgs);  
 }
 
 function triggerInternalSiteUpdate()
 {
-	var mydate = new Date();
-	mydate.setHours(0);
-	mydate.setMinutes(0);
-	mydate.setSeconds(0);
-	var gonelistarray = whoIsOut(mydate); 
-	updateInternalSite(gonelistarray , mydate);
+	var myDate = new Date();
+	myDate.setHours(0);
+	myDate.setMinutes(0);
+	myDate.setSeconds(0);
+	var goneListArray = whoIsOut(myDate); 
+	updateInternalSite(goneListArray , myDate);
 }
 
-function updateInternalSite(gonelistarray, thedate)
+function updateInternalSite(goneListArray, theDate)
 {
-	if(gonelistarray.length===0||postExists(thedate))
+	if(goneListArray.length===0||postExists(theDate))
 	{
 		//if nobody is out, or if the out list has already been posted, do not post
 		return false;
 	}
   
-	gonelist = gonelistarray.join("<br/>");
-	var thedateshort = Utilities.formatDate(thedate,"GMT","M/d/yyyy");
-	var page = SitesApp.getPageByUrl(outpage);
+	var goneList = goneListArray.join("<br/>");
+	var theDateshort = Utilities.formatDate(theDate,"GMT","M/d/yyyy");
+	var page = SitesApp.getPageByUrl(outPage);
 	
 	if (page === null)
 	{ 
@@ -251,17 +254,18 @@ function updateInternalSite(gonelistarray, thedate)
 	else
 	{ 
 		var announcement = page.createAnnouncement(
-            "Who is Out: " + thedateshort, gonelist); 
+            "Who is Out: " + theDateshort, goneList); 
+            /*cannot find 'announcement' in use anywhere else ?depricate? */
 		MailApp.sendEmail(
             siteUpdateNotify, "Updated Who is Out Website", "Who is Out: " + 
-            thedateshort + " " + gonelist);
+            theDateshort + " " + goneList);
 	}
 }
 
-function postExists(thedate)
+function postExists(theDate)
 {
 	var post = SitesApp.getPageByUrl(
-        outpage + "who-is-out-" + Utilities.formatDate(thedate,
+        outPage + "who-is-out-" + Utilities.formatDate(theDate,
         "GMT","M-d-yyyy"));
         
 	if (post === null)  //does not exist
